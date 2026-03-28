@@ -17,6 +17,8 @@ docker compose version
 
 sudo usermod -aG docker $USER
 
+sudo newgrp docker
+
 sudo apt install git -y
 
 git clone https://github.com/EdwardMatthews/webptopdf.git
