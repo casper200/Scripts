@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 ##=====*webptopdf*=====##
 
+# Если нет прав на Docker, перезапускаемся с правильной группой
+if ! docker ps &>/dev/null; then
+    # Добавляем пользователя в группу docker если ещё не добавлен
+    if ! groups | grep -q docker; then
+        sudo usermod -aG docker "$USER"
+    fi
+    # Перезапускаем скрипт с группой docker и выходим
+    exec sg docker "$0"
+fi
+
+# Дальше скрипт выполняется уже с правами Docker
 sudo apt update -y
 
 sudo apt install -y ca-certificates curl gnupg
@@ -12,15 +23,9 @@ sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 sudo systemctl enable --now docker
 
-docker --version
-docker compose version
-
-sudo usermod -aG docker $USER
-
-sudo newgrp docker
-
 sudo apt install git -y
 
+rm -rf webptopdf
 git clone https://github.com/EdwardMatthews/webptopdf.git
 cd webptopdf
 
